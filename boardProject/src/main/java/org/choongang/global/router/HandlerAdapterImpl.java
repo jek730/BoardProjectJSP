@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.choongang.global.advices.HandlerControllerAdvice;
 import org.choongang.global.config.annotations.*;
 import org.choongang.global.config.containers.BeanContainer;
@@ -113,6 +114,8 @@ public class HandlerAdapterImpl implements HandlerAdapter {
                 args.add(request);
             } else if (cls == HttpServletResponse.class) {
                 args.add(response);
+            } else if (cls == HttpSession.class) {
+                args.add(BeanContainer.getInstance().getBean(HttpSession.class));
             } else if (cls == int.class) {
                 args.add(Integer.parseInt(paramValue));
             } else if (cls == Integer.class) {
@@ -159,7 +162,10 @@ public class HandlerAdapterImpl implements HandlerAdapter {
         /* 요청 메서드 호출 S */
 
         // controller 적용 범위  Advice 처리
-        handlerControllerAdvice.handle(controller);
+        boolean isContinue = handlerControllerAdvice.handle(controller);
+        if (!isContinue) { // 컨트롤러 메서드 실행 X
+            return;
+        }
 
         Object result = method.invoke(controller, args.toArray());
 
