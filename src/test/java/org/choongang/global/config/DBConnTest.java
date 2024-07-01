@@ -8,10 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 /**
  * 마이바티스 DB 연결 테스트
- * 
+ *
  */
 public class DBConnTest {
-    
+
     @Test
     @DisplayName("마이바티스 설정에 따라 SqlSession 객체가 정상 생성되는지 테스트")
     void dbConnectionTest() {
