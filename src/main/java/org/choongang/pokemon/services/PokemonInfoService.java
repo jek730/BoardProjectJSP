@@ -150,7 +150,7 @@ public class PokemonInfoService {
                 saveService.save(pokemon);
 
             } catch (JsonProcessingException e) {
-               e.printStackTrace();
+                e.printStackTrace();
             }
         }
 
@@ -165,25 +165,25 @@ public class PokemonInfoService {
      */
     public void updateAll() {
         //Thread th = new Thread(() -> {
-            PokemonSearch search = new PokemonSearch();
-            search.setPage(1);
-            search.setLimit(2000);
-            List<Item> items = getApiList(search);
-            items.forEach(item -> {
-                String url = item.getUrl();
-                Pattern p = Pattern.compile("/pokemon/(\\d*)/");
-                Matcher matcher = p.matcher(url);
-                if (matcher.find()) {
-                    long seq = Long.parseLong(matcher.group(1));
-                    try {
-                        update(seq);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        // 이미 추가된 포켓몬은 seq 번호 중복으로 무결성 제약조건 발생, 해당 건은 건너 뛴다.
-                    }
+        PokemonSearch search = new PokemonSearch();
+        search.setPage(1);
+        search.setLimit(2000);
+        List<Item> items = getApiList(search);
+        items.forEach(item -> {
+            String url = item.getUrl();
+            Pattern p = Pattern.compile("/pokemon/(\\d*)/");
+            Matcher matcher = p.matcher(url);
+            if (matcher.find()) {
+                long seq = Long.parseLong(matcher.group(1));
+                try {
+                    update(seq);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // 이미 추가된 포켓몬은 seq 번호 중복으로 무결성 제약조건 발생, 해당 건은 건너 뛴다.
                 }
+            }
 
-            });
+        });
         //});
 
         //th.setDaemon(true);

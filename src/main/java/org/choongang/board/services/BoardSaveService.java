@@ -14,6 +14,7 @@ import org.choongang.member.MemberUtil;
 import org.mindrot.jbcrypt.BCrypt;
 import org.modelmapper.ModelMapper;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -28,6 +29,7 @@ public class BoardSaveService {
     private final BoardSaveValidator validator;
     private final MemberUtil memberUtil;
     private final BoardInfoService infoService;
+    private final BoardAuthService authService;
 
     public Optional<BoardData> save(RequestBoardData form) {
 
@@ -35,6 +37,9 @@ public class BoardSaveService {
 
         String mode = form.getMode();
         mode = mode == null || mode.isBlank() ? "write" : mode;
+
+        // 글 쓰기, 글 수정 권한 체크
+        authService.check(form.getBId(), form.getSeq(), mode);
 
         BoardData data = new ModelMapper().map(form, BoardData.class);
 
@@ -61,8 +66,12 @@ public class BoardSaveService {
         if (!memberUtil.isLogin()) {
             String hash = BCrypt.hashpw(form.getGuestPassword(), BCrypt.gensalt(12));
             data.setGuestPassword(hash);
+        } else {
+            data.setGuestPassword("");
         }
 
+        String category = data.getCategory();
+        data.setCategory(Objects.requireNonNullElse(category, ""));
 
         if (mode.equals("update")) {
             mapper.modify(data);
